@@ -12,7 +12,9 @@ logger = logging.getLogger(__name__)
 
 TELEGRAM_TOKEN = os.environ.get("TELEGRAM_TOKEN")
 ANTHROPIC_KEY = os.environ.get("ANTHROPIC_KEY")
-CHANNEL_ID = os.environ.get("CHANNEL_ID", "@azamatislamgaliev")
+CHANNEL_USERNAME = "azamatislamgaliev"
+CHANNEL_LINK = f"https://t.me/{CHANNEL_USERNAME}"
+CHANNEL_ID = f"@{CHANNEL_USERNAME}"
 
 client = Anthropic(api_key=ANTHROPIC_KEY)
 
@@ -23,7 +25,7 @@ TEXTS = {
             "Этот бот поможет тебе найти свою целевую аудиторию.\n\n"
             "🎯 *Что делает бот:*\n"
             "Ты отвечаешь на 8 вопросов о своей нише, а ИИ анализирует рынок и выдаёт подробный разбор сегментов ЦА — с портретами клиентов, их болями, триггерами и готовыми инструкциями по маркетингу.\n\n"
-            "📌 *Что получишь на выходе:*\n"
+            "📌 *Что получишь:*\n"
             "— Кто твой клиент и как он живёт\n"
             "— Что его останавливает от покупки\n"
             "— Где его найти: таргет, поиск, геолокация\n"
@@ -32,23 +34,21 @@ TEXTS = {
         ),
         "start_btn": "🚀 Начать анализ",
         "sub_required": (
-            "📢 Чтобы использовать бота, подпишись на канал:\n\n"
-            "👉 @azamatislamgaliev\n\n"
-            "Там я публикую инструменты и стратегии для маркетологов и предпринимателей.\n\n"
-            "После подписки нажми кнопку ниже 👇"
+            "📢 Чтобы использовать бота, подпишись на канал.\n\n"
+            "Там я публикую инструменты и стратегии для маркетологов и предпринимателей 👇"
         ),
-        "check_btn": "✅ Я подписался, проверить",
+        "sub_btn": "📲 Подписаться на канал",
+        "check_btn": "✅ Проверить подписку",
         "not_subbed": (
             "❌ Подписка не найдена.\n\n"
-            "Подпишись на @azamatislamgaliev и нажми кнопку снова."
+            "Подпишись на канал и нажми «Проверить подписку» снова 👇"
         ),
-        "subscribed_ok": "✅ Подписка подтверждена! Начинаем анализ.",
+        "subscribed_ok": "✅ Подписка подтверждена! Начинаем анализ.\n\nОтвечай развёрнуто — чем подробнее, тем точнее результат.",
         "analyzing": "⏳ ИИ анализирует твою нишу...\n\nЭто займёт около 1–2 минут. Пожалуйста, подожди.",
         "done": "✅ *Анализ готов!* Вот твои сегменты целевой аудитории:",
         "restart_btn": "🔄 Попробовать другую нишу",
         "change_lang_btn": "🌐 Сменить язык",
-        "restart_msg": "Хорошо, начинаем с новой нишей!",
-        "begin_btn": "🚀 Начать",
+        "restart_msg": "Хорошо, начинаем с новой нишей!\n\nОтвечай развёрнуто — чем подробнее, тем точнее результат.",
         "error": "❌ Произошла ошибка. Попробуй ещё раз — /start",
         "answer_prompt": "Напиши свой ответ 👇",
         "too_short": "✏️ Напиши хотя бы 2–3 предложения — так анализ будет точнее.",
@@ -69,23 +69,21 @@ TEXTS = {
         ),
         "start_btn": "🚀 Tahlilni boshlash",
         "sub_required": (
-            "📢 Botdan foydalanish uchun kanalga obuna bo'ling:\n\n"
-            "👉 @azamatislamgaliev\n\n"
-            "U yerda men marketologlar va tadbirkorlar uchun vositalar va strategiyalar e'lon qilaman.\n\n"
-            "Obuna bo'lgandan so'ng quyidagi tugmani bosing 👇"
+            "📢 Botdan foydalanish uchun kanalga obuna bo'ling.\n\n"
+            "U yerda men marketologlar va tadbirkorlar uchun vositalar va strategiyalar e'lon qilaman 👇"
         ),
-        "check_btn": "✅ Obuna bo'ldim, tekshiring",
+        "sub_btn": "📲 Kanalga obuna bo'lish",
+        "check_btn": "✅ Obunani tekshirish",
         "not_subbed": (
             "❌ Obuna topilmadi.\n\n"
-            "@azamatislamgaliev ga obuna bo'ling va tugmani qayta bosing."
+            "Kanalga obuna bo'ling va «Obunani tekshirish» tugmasini qayta bosing 👇"
         ),
-        "subscribed_ok": "✅ Obuna tasdiqlandi! Tahlilni boshlaymiz.",
+        "subscribed_ok": "✅ Obuna tasdiqlandi! Tahlilni boshlaymiz.\n\nBatafsil yozing — qanchalik to'liq bo'lsa, natija shunchalik aniq bo'ladi.",
         "analyzing": "⏳ AI nichangizni tahlil qilmoqda...\n\nBu taxminan 1–2 daqiqa vaqt oladi. Iltimos, kuting.",
         "done": "✅ *Tahlil tayyor!* Mana sizning maqsadli auditoriya segmentlaringiz:",
         "restart_btn": "🔄 Boshqa nichani sinab ko'rish",
         "change_lang_btn": "🌐 Tilni o'zgartirish",
-        "restart_msg": "Yaxshi, yangi nicha bilan boshlaymiz!",
-        "begin_btn": "🚀 Boshlash",
+        "restart_msg": "Yaxshi, yangi nicha bilan boshlaymiz!\n\nBatafsil yozing — qanchalik to'liq bo'lsa, natija shunchalik aniq bo'ladi.",
         "error": "❌ Xatolik yuz berdi. Qayta urinib ko'ring — /start",
         "answer_prompt": "Javobingizni yozing 👇",
         "too_short": "✏️ Kamida 2–3 ta gap yozing — shunda tahlil aniqroq bo'ladi.",
@@ -154,26 +152,26 @@ QUESTIONS = {
         {
             "num": "02",
             "q": "Jarayon qanday tashkil etilgan — mijoz nima oladi?",
-            "hint": "Birinchi murojaaтdan natijaga qadar bosqichlarni tavsiflang. Nima kiradi, qancha davom etadi.",
+            "hint": "Birinchi murojaaтdan natijaga qadar bosqichlarni tavsiflang.",
             "example": "💡 Misol: Dars 45 daqiqa, haftasiga 1–2 marta. Sinov darsi 20 000 so'm. Individual dastur — klassika yoki sevimli qo'shiqlar."
         },
         {
             "num": "03",
             "q": "Raqobatchilardan farqingiz nimada?",
             "hint": "Sizda bor, boshqalarda yo'q narsa — xususiy mutaxassislar, boshqa maktablar, o'xshash xizmatlar.",
-            "example": "💡 Misol: Hududdagi yagona maktabmizki, noldan boshlagan holda darhol sevimli qo'shiqlarni o'ynash mumkin. Qulay avtoturargoh ham bor."
+            "example": "💡 Misol: Hududdagi yagona maktabmizki, noldan boshlagan holda darhol sevimli qo'shiqlarni o'ynash mumkin."
         },
         {
             "num": "04",
             "q": "Siz qayerda joylashgansiz yoki qaysi mintaqada ishlaysiz?",
             "hint": "Oflayn bo'lsa — shahar, tuman, mo'ljallar. Onlayn bo'lsa — qaysi auditoriyaga yo'naltirilgansiz.",
-            "example": "💡 Misol: Toshkent, Yunusobod tumani. Yaqinda metro va yirik savdo markazi. Tuman aholisi bilan ishlaymiz."
+            "example": "💡 Misol: Toshkent, Yunusobod tumani. Yaqinda metro va savdo markazi."
         },
         {
             "num": "05",
             "q": "Mijozning qaysi real vaziyatini hal qilasiz?",
-            "hint": "Siz topishdan OLDIN odamning hayotida nima sodir bo'lishini tasvirlab bering. Aniq vaziyatni.",
-            "example": "💡 Misol: Ota-onalar farzandini musiqa maktabiga bermoqchi, lekin davlat maktabidan qo'rqishadi — u yerda qattiq, bolalar yig'lab ketishadi."
+            "hint": "Siz topishdan OLDIN odamning hayotida nima sodir bo'lishini tasvirlab bering.",
+            "example": "💡 Misol: Ota-onalar farzandini musiqa maktabiga bermoqchi, lekin davlat maktabidan qo'rqishadi."
         },
         {
             "num": "06",
@@ -184,14 +182,14 @@ QUESTIONS = {
         {
             "num": "07",
             "q": "Narxingiz va to'lov formatingiz qanday?",
-            "hint": "Narx, obuna, sinov muddati, bo'lib to'lash — xarid qaroriga ta'sir qiladigan hamma narsa.",
-            "example": "💡 Misol: 8 darsga abonement — 320 000 so'm. Bir martalik — 55 000 so'm. Birinchi sinov — 20 000 so'm."
+            "hint": "Narx, obuna, sinov muddati, bo'lib to'lash.",
+            "example": "💡 Misol: 8 darsga abonement — 320 000 so'm. Bir martalik — 55 000 so'm. Sinov — 20 000 so'm."
         },
         {
             "num": "08",
             "q": "Hozir mijozlar sizga qanday keladi?",
-            "hint": "Ular hozir siz haqingizda qayerdan bilib olishadi. Nima ishlaydi, nima sinab ko'rildi va ishlamadi.",
-            "example": "💡 Misol: Asosan og'izdan-og'izga va Yandex.Xaritalar. Instagramni yuritmaymiz. Targetli reklamani ishlatmadik."
+            "hint": "Ular hozir siz haqingizda qayerdan bilib olishadi. Nima ishlaydi, nima ishlamadi.",
+            "example": "💡 Misol: Asosan og'izdan-og'izga va Yandex.Xaritalar. Instagramni yuritmaymiz."
         }
     ]
 }
@@ -278,7 +276,7 @@ Batafsil va aniq yozing. Hech qanday abstraktsiya yo'q."""
 async def check_subscription(bot, user_id):
     try:
         member = await bot.get_chat_member(chat_id=CHANNEL_ID, user_id=user_id)
-        return member.status in ["member", "administrator", "creator"]
+        return member.status in ["member", "administrator", "creator", "restricted"]
     except Exception as e:
         logger.error(f"Subscription check error: {e}")
         return False
@@ -307,14 +305,12 @@ async def button_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
     lang = get_lang(context)
     t = TEXTS[lang]
 
-    # ── Выбор языка ──────────────────────────────────────────
+    # Выбор языка
     if data.startswith("lang_"):
         chosen = data.split("_")[1]
         context.user_data["lang"] = chosen
         lang = chosen
         t = TEXTS[lang]
-
-        # После выбора языка — показать welcome + кнопку "Начать"
         keyboard = [[InlineKeyboardButton(t["start_btn"], callback_data="show_sub")]]
         await query.edit_message_text(
             t["welcome"],
@@ -322,19 +318,25 @@ async def button_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
             reply_markup=InlineKeyboardMarkup(keyboard)
         )
 
-    # ── Нажал "Начать" — показать экран подписки ─────────────
+    # Нажал "Начать" — показать экран подписки с кнопкой-ссылкой
     elif data == "show_sub":
-        keyboard = [[InlineKeyboardButton(t["check_btn"], callback_data="check_sub")]]
+        keyboard = [
+            [InlineKeyboardButton(t["sub_btn"], url=CHANNEL_LINK)],
+            [InlineKeyboardButton(t["check_btn"], callback_data="check_sub")]
+        ]
         await query.edit_message_text(
             t["sub_required"],
             reply_markup=InlineKeyboardMarkup(keyboard)
         )
 
-    # ── Проверить подписку ────────────────────────────────────
+    # Проверить подписку
     elif data == "check_sub":
         is_sub = await check_subscription(query.message.chat.bot, query.from_user.id)
         if not is_sub:
-            keyboard = [[InlineKeyboardButton(t["check_btn"], callback_data="check_sub")]]
+            keyboard = [
+                [InlineKeyboardButton(t["sub_btn"], url=CHANNEL_LINK)],
+                [InlineKeyboardButton(t["check_btn"], callback_data="check_sub")]
+            ]
             await query.edit_message_text(
                 t["not_subbed"],
                 reply_markup=InlineKeyboardMarkup(keyboard)
@@ -345,16 +347,16 @@ async def button_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
         context.user_data["step"] = 0
         context.user_data["answers"] = []
         await query.edit_message_text(t["subscribed_ok"])
-        await send_question(query.message, context, new=True)
+        await send_question(query.message, context)
 
-    # ── Перезапуск ────────────────────────────────────────────
+    # Перезапуск
     elif data == "restart":
         context.user_data["step"] = 0
         context.user_data["answers"] = []
         await query.edit_message_text(t["restart_msg"])
-        await send_question(query.message, context, new=True)
+        await send_question(query.message, context)
 
-    # ── Смена языка ───────────────────────────────────────────
+    # Смена языка
     elif data == "change_lang":
         context.user_data.clear()
         keyboard = [[
@@ -367,7 +369,7 @@ async def button_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
         )
 
 
-async def send_question(message, context, new=False):
+async def send_question(message, context):
     lang = get_lang(context)
     step = context.user_data.get("step", 0)
     questions = QUESTIONS[lang]
@@ -419,7 +421,7 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
         await update.message.reply_text(t["analyzing"])
         await run_analysis(update, context)
     else:
-        await send_question(update.message, context, new=True)
+        await send_question(update.message, context)
 
 
 async def run_analysis(update: Update, context: ContextTypes.DEFAULT_TYPE):
@@ -447,7 +449,6 @@ async def run_analysis(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
         await update.message.reply_text(t["done"], parse_mode="Markdown")
 
-        # Разбиваем на части по 4000 символов
         chunk_size = 4000
         for i in range(0, len(result), chunk_size):
             await update.message.reply_text(result[i:i + chunk_size])
@@ -472,7 +473,7 @@ async def restart_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
     context.user_data["step"] = 0
     context.user_data["answers"] = []
     await update.message.reply_text(t["restart_msg"])
-    await send_question(update.message, context, new=True)
+    await send_question(update.message, context)
 
 
 async def lang_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
