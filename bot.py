@@ -399,7 +399,7 @@ async def run_analysis(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     try:
         response = client.messages.create(
-            model="claude-3-5-sonnet-20241022",
+            model="claude-3-haiku-20240307",
             max_tokens=4000,
             system=SYSTEM_PROMPT[lang],
             messages=[{"role": "user", "content": user_msg}]
