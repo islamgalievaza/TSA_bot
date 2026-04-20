@@ -12,9 +12,6 @@ logger = logging.getLogger(__name__)
 
 TELEGRAM_TOKEN = os.environ.get("TELEGRAM_TOKEN")
 ANTHROPIC_KEY = os.environ.get("ANTHROPIC_KEY")
-CHANNEL_USERNAME = "azamatislamgaliev"
-CHANNEL_LINK = f"https://t.me/{CHANNEL_USERNAME}"
-CHANNEL_ID = f"@{CHANNEL_USERNAME}"
 
 client = Anthropic(api_key=ANTHROPIC_KEY)
 
@@ -33,32 +30,16 @@ TEXTS = {
             "Нажми кнопку чтобы начать 👇"
         ),
         "start_btn": "🚀 Начать анализ",
-        "sub_required": (
-            "📢 Чтобы использовать бота, подпишись на канал.\n\n"
-            "Там я публикую инструменты и стратегии для маркетологов и предпринимателей 👇"
-        ),
-        "sub_btn": "📲 Подписаться на канал",
-        "check_btn": "✅ Я подписался — проверить",
-        "not_subbed": (
-            "❌ Подписка не найдена.\n\n"
-            "Пожалуйста, подпишись на канал @azamatislamgaliev и нажми кнопку снова 👇"
-        ),
-        "subscribed_ok": (
-            "✅ Подписка подтверждена! Начинаем анализ.\n\n"
-            "Отвечай развёрнуто — чем подробнее, тем точнее результат."
-        ),
         "analyzing": "⏳ ИИ анализирует твою нишу...\n\nЭто займёт около 1–2 минут. Пожалуйста, подожди.",
         "done": "✅ *Анализ готов!* Вот твои сегменты целевой аудитории:",
         "restart_btn": "🔄 Попробовать другую нишу",
         "change_lang_btn": "🌐 Сменить язык",
-        "restart_msg": (
-            "Хорошо, начинаем с новой нишей!\n\n"
-            "Отвечай развёрнуто — чем подробнее, тем точнее результат."
-        ),
+        "restart_msg": "Хорошо, начинаем с новой нишей!\n\nОтвечай развёрнуто — чем подробнее, тем точнее результат.",
         "error": "❌ Произошла ошибка. Попробуй ещё раз — /start",
         "answer_prompt": "Напиши свой ответ 👇",
         "too_short": "✏️ Напиши хотя бы 2–3 предложения — так анализ будет точнее.",
         "footer": "─────────────────\n✉️ @azamatislamgaliev",
+        "no_session": "Напиши /start чтобы начать.",
     },
     "uz": {
         "welcome": (
@@ -74,32 +55,16 @@ TEXTS = {
             "Boshlash uchun tugmani bosing 👇"
         ),
         "start_btn": "🚀 Tahlilni boshlash",
-        "sub_required": (
-            "📢 Botdan foydalanish uchun kanalga obuna bo'ling.\n\n"
-            "U yerda men marketologlar va tadbirkorlar uchun vositalar va strategiyalar e'lon qilaman 👇"
-        ),
-        "sub_btn": "📲 Kanalga obuna bo'lish",
-        "check_btn": "✅ Obuna bo'ldim — tekshirish",
-        "not_subbed": (
-            "❌ Obuna topilmadi.\n\n"
-            "@azamatislamgaliev kanalga obuna bo'ling va tugmani qayta bosing 👇"
-        ),
-        "subscribed_ok": (
-            "✅ Obuna tasdiqlandi! Tahlilni boshlaymiz.\n\n"
-            "Batafsil yozing — qanchalik to'liq bo'lsa, natija shunchalik aniq bo'ladi."
-        ),
         "analyzing": "⏳ AI nichangizni tahlil qilmoqda...\n\nBu taxminan 1–2 daqiqa vaqt oladi. Iltimos, kuting.",
         "done": "✅ *Tahlil tayyor!* Mana sizning maqsadli auditoriya segmentlaringiz:",
         "restart_btn": "🔄 Boshqa nichani sinab ko'rish",
         "change_lang_btn": "🌐 Tilni o'zgartirish",
-        "restart_msg": (
-            "Yaxshi, yangi nicha bilan boshlaymiz!\n\n"
-            "Batafsil yozing — qanchalik to'liq bo'lsa, natija shunchalik aniq bo'ladi."
-        ),
+        "restart_msg": "Yaxshi, yangi nicha bilan boshlaymiz!\n\nBatafsil yozing — qanchalik to'liq bo'lsa, natija shunchalik aniq bo'ladi.",
         "error": "❌ Xatolik yuz berdi. Qayta urinib ko'ring — /start",
         "answer_prompt": "Javobingizni yozing 👇",
         "too_short": "✏️ Kamida 2–3 ta gap yozing — shunda tahlil aniqroq bo'ladi.",
         "footer": "─────────────────\n✉️ @azamatislamgaliev",
+        "no_session": "/start yozing va boshlang.",
     }
 }
 
@@ -285,15 +250,6 @@ Batafsil va aniq yozing. Hech qanday abstraktsiya yo'q."""
 }
 
 
-async def check_subscription(bot, user_id):
-    try:
-        member = await bot.get_chat_member(chat_id=CHANNEL_ID, user_id=user_id)
-        return member.status in ["member", "administrator", "creator", "restricted"]
-    except Exception as e:
-        logger.error(f"Subscription check error: {e}")
-        return None  # None = не удалось проверить
-
-
 def get_lang(context):
     return context.user_data.get("lang", "ru")
 
@@ -310,13 +266,6 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     )
 
 
-def sub_keyboard(t):
-    return InlineKeyboardMarkup([
-        [InlineKeyboardButton(t["sub_btn"], url=CHANNEL_LINK)],
-        [InlineKeyboardButton(t["check_btn"], callback_data="check_sub")]
-    ])
-
-
 async def button_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
     query = update.callback_query
     await query.answer()
@@ -330,45 +279,18 @@ async def button_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
         context.user_data["lang"] = chosen
         lang = chosen
         t = TEXTS[lang]
-        keyboard = [[InlineKeyboardButton(t["start_btn"], callback_data="show_sub")]]
+        keyboard = [[InlineKeyboardButton(t["start_btn"], callback_data="begin")]]
         await query.edit_message_text(
             t["welcome"],
             parse_mode="Markdown",
             reply_markup=InlineKeyboardMarkup(keyboard)
         )
 
-    # Нажал "Начать" — показать экран подписки
-    elif data == "show_sub":
-        await query.edit_message_text(
-            t["sub_required"],
-            reply_markup=sub_keyboard(t)
-        )
-
-    # Проверить подписку
-    elif data == "check_sub":
-        result = await check_subscription(query.message.chat.bot, query.from_user.id)
-
-        # Если не удалось проверить (бот не админ канала)
-        if result is None:
-            await query.edit_message_text(
-                "⚠️ Не удалось проверить подписку. "
-                "Убедись, что подписался на @azamatislamgaliev и попробуй снова.",
-                reply_markup=sub_keyboard(t)
-            )
-            return
-
-        # Не подписан
-        if not result:
-            await query.edit_message_text(
-                t["not_subbed"],
-                reply_markup=sub_keyboard(t)
-            )
-            return
-
-        # Подписан — начинаем вопросы
+    # Начать — сразу вопросы без проверки подписки
+    elif data == "begin":
         context.user_data["step"] = 0
         context.user_data["answers"] = []
-        await query.edit_message_text(t["subscribed_ok"])
+        await query.edit_message_text("✅ Начинаем! Отвечай развёрнуто — чем подробнее, тем точнее результат.")
         await send_question(query.message, context)
 
     # Перезапуск
@@ -420,7 +342,7 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
     t = TEXTS[lang]
 
     if "step" not in context.user_data:
-        await update.message.reply_text("Напиши /start чтобы начать.")
+        await update.message.reply_text(t["no_session"])
         return
 
     step = context.user_data.get("step", 0)
@@ -457,10 +379,7 @@ async def run_analysis(update: Update, context: ContextTypes.DEFAULT_TYPE):
         for q, a in zip(questions, answers)
     ])
 
-    user_msg = (
-        f"Данные о нише:\n\n{pairs}\n\n"
-        f"Выполни полный анализ целевой аудитории."
-    )
+    user_msg = f"Данные о нише:\n\n{pairs}\n\nВыполни полный анализ целевой аудитории."
 
     try:
         response = client.messages.create(
