@@ -1,5 +1,7 @@
 import os
 import logging
+import threading
+from http.server import HTTPServer, BaseHTTPRequestHandler
 from anthropic import Anthropic
 from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
 from telegram.ext import (
@@ -12,8 +14,25 @@ logger = logging.getLogger(__name__)
 
 TELEGRAM_TOKEN = os.environ.get("TELEGRAM_TOKEN")
 ANTHROPIC_KEY = os.environ.get("ANTHROPIC_KEY")
+PORT = int(os.environ.get("PORT", 8080))
 
 client = Anthropic(api_key=ANTHROPIC_KEY)
+
+
+class HealthHandler(BaseHTTPRequestHandler):
+    def do_GET(self):
+        self.send_response(200)
+        self.end_headers()
+        self.wfile.write(b"OK")
+
+    def log_message(self, format, *args):
+        pass
+
+
+def run_health_server():
+    server = HTTPServer(("0.0.0.0", PORT), HealthHandler)
+    server.serve_forever()
+
 
 TEXTS = {
     "ru": {
@@ -286,11 +305,10 @@ async def button_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
     elif data == "begin":
         context.user_data["step"] = 0
         context.user_data["answers"] = []
-        await query.edit_message_text(
-            "✅ Начинаем!\n\nОтвечай развёрнуто — чем подробнее, тем точнее результат."
-            if lang == "ru" else
-            "✅ Boshlaymiz!\n\nBatafsil yozing — qanchalik to'liq bo'lsa, natija shunchalik aniq bo'ladi."
-        )
+        msg = ("✅ Начинаем!\n\nОтвечай развёрнуто — чем подробнее, тем точнее результат."
+               if lang == "ru" else
+               "✅ Boshlaymiz!\n\nBatafsil yozing — qanchalik to'liq bo'lsa, natija shunchalik aniq bo'ladi.")
+        await query.edit_message_text(msg)
         await send_question(query.message, context)
 
     elif data == "restart":
@@ -381,14 +399,13 @@ async def run_analysis(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     try:
         response = client.messages.create(
-            model="claude-3-5-sonnet-20241022",,
+            model="claude-3-5-sonnet-20241022",
             max_tokens=4000,
             system=SYSTEM_PROMPT[lang],
             messages=[{"role": "user", "content": user_msg}]
         )
 
         result = response.content[0].text
-
         await update.message.reply_text(t["done"], parse_mode="Markdown")
 
         chunk_size = 4000
@@ -432,6 +449,11 @@ async def lang_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 
 def main():
+    # Запускаем health server в отдельном потоке
+    health_thread = threading.Thread(target=run_health_server, daemon=True)
+    health_thread.start()
+    logger.info(f"Health server started on port {PORT}")
+
     app = Application.builder().token(TELEGRAM_TOKEN).build()
     app.add_handler(CommandHandler("start", start))
     app.add_handler(CommandHandler("restart", restart_command))
