@@ -35,7 +35,6 @@ TEXTS = {
         "restart_btn": "🔄 Попробовать другую нишу",
         "change_lang_btn": "🌐 Сменить язык",
         "restart_msg": "Хорошо, начинаем с новой нишей!\n\nОтвечай развёрнуто — чем подробнее, тем точнее результат.",
-        "error": "❌ Произошла ошибка. Попробуй ещё раз — /start",
         "answer_prompt": "Напиши свой ответ 👇",
         "too_short": "✏️ Напиши хотя бы 2–3 предложения — так анализ будет точнее.",
         "footer": "─────────────────\n✉️ @azamatislamgaliev",
@@ -60,7 +59,6 @@ TEXTS = {
         "restart_btn": "🔄 Boshqa nichani sinab ko'rish",
         "change_lang_btn": "🌐 Tilni o'zgartirish",
         "restart_msg": "Yaxshi, yangi nicha bilan boshlaymiz!\n\nBatafsil yozing — qanchalik to'liq bo'lsa, natija shunchalik aniq bo'ladi.",
-        "error": "❌ Xatolik yuz berdi. Qayta urinib ko'ring — /start",
         "answer_prompt": "Javobingizni yozing 👇",
         "too_short": "✏️ Kamida 2–3 ta gap yozing — shunda tahlil aniqroq bo'ladi.",
         "footer": "─────────────────\n✉️ @azamatislamgaliev",
@@ -80,7 +78,7 @@ QUESTIONS = {
             "num": "02",
             "q": "Как устроен процесс — что получает клиент?",
             "hint": "Опиши шаги от первого контакта до результата. Что входит, сколько длится.",
-            "example": "💡 Пример: Урок 45 минут, 1–2 раза в неделю. Пробный урок 500 руб. Индивидуальная программа — классика или популярные песни."
+            "example": "💡 Пример: Урок 45 минут, 1–2 раза в неделю. Пробный урок 50 000 сум. Индивидуальная программа — классика или популярные песни."
         },
         {
             "num": "03",
@@ -92,7 +90,7 @@ QUESTIONS = {
             "num": "04",
             "q": "Где ты находишься или в каком регионе работаешь?",
             "hint": "Если офлайн — город, район, ориентиры. Если онлайн — на какую аудиторию ориентируешься.",
-            "example": "💡 Пример: Москва, район Митино. Рядом метро и крупный ТЦ. Работаем с жителями района."
+            "example": "💡 Пример: Ташкент, Юнусабадский район. Рядом метро и крупный ТЦ. Работаем с жителями района."
         },
         {
             "num": "05",
@@ -109,8 +107,8 @@ QUESTIONS = {
         {
             "num": "07",
             "q": "Какая у тебя цена и формат оплаты?",
-            "hint": "Стоимость, есть ли абонемент, пробный период, рассрочка.",
-            "example": "💡 Пример: Абонемент 8 уроков — 9 600 руб. Разовый — 1 400 руб. Первый пробный — 500 руб."
+            "hint": "Стоимость в сумах, есть ли абонемент, пробный период, рассрочка.",
+            "example": "💡 Пример: Абонемент 8 уроков — 800 000 сум. Разовый — 120 000 сум. Первый пробный — 50 000 сум."
         },
         {
             "num": "08",
@@ -130,7 +128,7 @@ QUESTIONS = {
             "num": "02",
             "q": "Jarayon qanday tashkil etilgan — mijoz nima oladi?",
             "hint": "Birinchi murojaaтdan natijaga qadar bosqichlarni tavsiflang.",
-            "example": "💡 Misol: Dars 45 daqiqa, haftasiga 1–2 marta. Sinov darsi 20 000 so'm. Individual dastur — klassika yoki sevimli qo'shiqlar."
+            "example": "💡 Misol: Dars 45 daqiqa, haftasiga 1–2 marta. Sinov darsi 50 000 so'm. Individual dastur — klassika yoki sevimli qo'shiqlar."
         },
         {
             "num": "03",
@@ -159,8 +157,8 @@ QUESTIONS = {
         {
             "num": "07",
             "q": "Narxingiz va to'lov formatingiz qanday?",
-            "hint": "Narx, obuna, sinov muddati, bo'lib to'lash.",
-            "example": "💡 Misol: 8 darsga abonement — 320 000 so'm. Bir martalik — 55 000 so'm. Sinov — 20 000 so'm."
+            "hint": "So'mdagi narx, obuna, sinov muddati, bo'lib to'lash.",
+            "example": "💡 Misol: 8 darsga abonement — 800 000 so'm. Bir martalik — 120 000 so'm. Sinov darsi — 50 000 so'm."
         },
         {
             "num": "08",
@@ -273,7 +271,6 @@ async def button_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
     lang = get_lang(context)
     t = TEXTS[lang]
 
-    # Выбор языка
     if data.startswith("lang_"):
         chosen = data.split("_")[1]
         context.user_data["lang"] = chosen
@@ -286,21 +283,22 @@ async def button_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
             reply_markup=InlineKeyboardMarkup(keyboard)
         )
 
-    # Начать — сразу вопросы без проверки подписки
     elif data == "begin":
         context.user_data["step"] = 0
         context.user_data["answers"] = []
-        await query.edit_message_text("✅ Начинаем! Отвечай развёрнуто — чем подробнее, тем точнее результат.")
+        await query.edit_message_text(
+            "✅ Начинаем!\n\nОтвечай развёрнуто — чем подробнее, тем точнее результат."
+            if lang == "ru" else
+            "✅ Boshlaymiz!\n\nBatafsil yozing — qanchalik to'liq bo'lsa, natija shunchalik aniq bo'ladi."
+        )
         await send_question(query.message, context)
 
-    # Перезапуск
     elif data == "restart":
         context.user_data["step"] = 0
         context.user_data["answers"] = []
         await query.edit_message_text(t["restart_msg"])
         await send_question(query.message, context)
 
-    # Смена языка
     elif data == "change_lang":
         context.user_data.clear()
         keyboard = [[
@@ -407,8 +405,9 @@ async def run_analysis(update: Update, context: ContextTypes.DEFAULT_TYPE):
         )
 
     except Exception as e:
-        logger.error(f"Analysis error: {e}")
-        await update.message.reply_text(t["error"])
+        error_msg = f"❌ Ошибка API: {type(e).__name__}: {str(e)}"
+        logger.error(error_msg)
+        await update.message.reply_text(error_msg)
 
 
 async def restart_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
